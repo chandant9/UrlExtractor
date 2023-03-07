@@ -50,9 +50,12 @@ while times > 0 :
             pos = href.rfind('#')
             if (pos > 1): href = href[:pos]
 
+            count = count + 1
             cur.execute('INSERT OR IGNORE INTO extractedurls (url) VALUES (?)', (href,))
-            cur.execute('UPDATE extractedurls SET extractedfrom = ? WHERE url = ?', (web, href))
+            cur.execute('UPDATE extractedurls SET extractedfrom = ? WHERE url = ?', (web, href,))
+            cur.execute('UPDATE extractedurls SET timesappeared = ? WHERE url = ?', (count, href,))
             con.commit()
+
     except:
         print('Unable to retrieve or parse page, incorrect url format:', web)
         cur.execute('UPDATE masterurls SET error = -1 WHERE url = ?', (web,))
