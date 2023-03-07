@@ -41,6 +41,8 @@ while times > 0 :
         soup = BeautifulSoup(html, 'html.parser')
         tags = soup('a')
         count = 0
+        hreflist = []
+        hreflistcount = dict()
         for tag in tags:
             href = tag.get('href', None)
             if href is None: continue
@@ -50,12 +52,27 @@ while times > 0 :
             pos = href.rfind('#')
             if (pos > 1): href = href[:pos]
 
-            count = count + 1
+            if href not in hreflist :
+                hreflist.append(href)
             cur.execute('INSERT OR IGNORE INTO extractedurls (url) VALUES (?)', (href,))
             cur.execute('UPDATE extractedurls SET extractedfrom = ? WHERE url = ?', (web, href,))
-            cur.execute('UPDATE extractedurls SET timesappeared = ? WHERE url = ?', (count, href,))
             con.commit()
+        print(hreflist)
+        #Counts the number of times the urls have appeared in the html
+        for h in hreflist :
+            hreflistcount[h] = hreflistcount.get(h, 0) + 1
 
+        for k, v in hreflistcount.items() :
+            cur.execute('UPDATE extractedurls SET timesappeared = ? WHERE url = ?', (v, k,))
+            con.commit()
+    except KeyboardInterrupt :
+        print('Program interrupted by user')
+
+    except Exception as e :
+        print('Unable to retrieve', web)
+        print('Error', e)
+        cur.execute('UPDATE masterurls SET error = -1 WHERE url = ?', (web,))
+        con.commit()
     except:
         print('Unable to retrieve or parse page, incorrect url format:', web)
         cur.execute('UPDATE masterurls SET error = -1 WHERE url = ?', (web,))
@@ -67,6 +84,8 @@ cur.execute('SELECT url FROM masterurls')
 urllist = list()
 for row in cur :
     urllist.append(str(row[0]))
+
+con.close()
 
 print('Current list of Master urls:',urllist)
 
