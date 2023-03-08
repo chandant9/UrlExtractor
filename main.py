@@ -21,6 +21,7 @@ cur.executescript('''
 
 count = input('How many urls would you like to search today? ')
 times = int(count)
+html = None
 while times > 0 :
     starturl = input('Enter a url you want to parse: ')
     web = urlformat(starturl)
