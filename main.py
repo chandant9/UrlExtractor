@@ -23,7 +23,7 @@ count = input('How many urls would you like to search today? ')
 times = int(count)
 html = None
 while times > 0 :
-    starturl = input('Enter a url you want to parse: ')
+    starturl = input('Enter a url you want to parse (only authorized websites): ')
     web = urlformat(starturl)
     if (len(web) > 1) :
         cur.execute('INSERT OR IGNORE INTO masterurls (url) VALUES (?)',(web,))

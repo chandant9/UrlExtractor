@@ -1,4 +1,4 @@
-def urlformat(x) :
+def urlformat(x):
     if x.endswith('/'):
         x = x[:-1]
     if x.endswith('htm') or x.endswith('html'):
